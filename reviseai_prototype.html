@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>RéviseAI — Prototype</title>
+<style>
+:root{--bg:#f7f8fc;--card:#fff;--text:#151722;--muted:#737786;--accent:#5b5ce2;--line:#e8e9ef;--green:#28a56a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;color:var(--text)}
+.app{max-width:430px;margin:auto;min-height:100vh;background:var(--bg);padding-bottom:92px}
+header{padding:28px 20px 14px}.logo{font-weight:800;font-size:24px;letter-spacing:-.7px}.logo span{color:var(--accent)}
+h1{font-size:28px;line-height:1.1;margin:18px 0 6px}h2{font-size:19px;margin:0 0 12px}p{color:var(--muted);margin:5px 0}
+main{padding:0 16px}.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;margin:12px 0;box-shadow:0 3px 14px #17192708}
+.hero{background:linear-gradient(135deg,#5b5ce2,#7778ed);color:#fff;border:0}.hero p{color:#e7e7ff}
+.progress{height:8px;background:#ffffff44;border-radius:20px;overflow:hidden;margin:16px 0 8px}.progress i{display:block;height:100%;width:68%;background:#fff;border-radius:20px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px}.btn{border:0;border-radius:14px;padding:13px 16px;font-weight:700;font-size:15px;cursor:pointer}.primary{background:var(--accent);color:white}.light{background:#f0f1ff;color:var(--accent)}.full{width:100%;margin-top:10px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.tile{padding:16px;border-radius:17px;background:#fff;border:1px solid var(--line);cursor:pointer}.emoji{font-size:25px}.tile b{display:block;margin-top:9px}.tile small{color:var(--muted)}
+.badge{font-size:12px;font-weight:700;background:#ececff;color:var(--accent);padding:7px 9px;border-radius:10px}.green{background:#e6f7ef;color:var(--green)}
+nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(430px,100%);height:76px;background:#fff;border-top:1px solid var(--line);display:flex;justify-content:space-around;align-items:center;z-index:5}nav button{background:none;border:0;color:#858896;font-size:11px}nav button.active{color:var(--accent);font-weight:800}nav .ni{font-size:22px;display:block;margin-bottom:3px}
+.screen{display:none}.screen.active{display:block}
+input,select,textarea{width:100%;padding:14px;border:1px solid var(--line);border-radius:14px;background:#fff;font:inherit;margin:6px 0 12px}label{font-size:13px;font-weight:700}
+.choice{padding:14px;border:1px solid var(--line);border-radius:14px;margin:9px 0;cursor:pointer}.choice.correct{border-color:#39ad76;background:#eaf8f1}.choice.wrong{border-color:#e06a6a;background:#fff0f0}
+.lock{filter:blur(.2px);position:relative}.premium{color:#6b4bd6;font-weight:800}
+.dark{--bg:#0f1015;--card:#181a21;--text:#f5f5f7;--muted:#a5a7b2;--line:#2b2d36}.dark nav{background:#181a21}.dark input,.dark select,.dark textarea{background:#181a21;color:var(--text)}.dark .tile{background:#181a21}.dark .choice{background:#181a21}.dark .light{background:#292b52;color:#b9b9ff}.dark .progress[style*="background:#eee"]{background:#30323b!important}
+</head>
+<body>
+<div class="app">
+<header><div class="row"><div class="logo">Révise<span>AI</span></div><button class="btn light" id="themeBtn" onclick="toggleTheme()">🌙</button></div></header>
+
+<section id="home" class="screen active">
+<main>
+<h1>Bonjour 👋</h1><p>Prêt à progresser aujourd’hui ?</p>
+<div class="card hero">
+<div class="row"><div><b>Prochain contrôle</b><h2 style="margin-top:7px">Maths — Second degré</h2></div><span class="badge" style="background:#ffffff33;color:#fff">J−7</span></div>
+<p>Objectif : maîtriser le chapitre</p><div class="progress"><i></i></div><div class="row"><small>68 % maîtrisé</small><small>7 jours</small></div>
+<button class="btn" style="background:#fff;color:#5657d8;margin-top:14px" onclick="show('planning')">Voir mon planning</button>
+</div>
+<h2 style="margin-top:25px">Que veux-tu faire ?</h2>
+<div class="grid">
+<div class="tile" onclick="show('add')"><span class="emoji">📸</span><b>Ajouter un cours</b><small>Photo, PDF ou texte</small></div>
+<div class="tile" onclick="show('fiche')"><span class="emoji">📚</span><b>Ma fiche</b><small>Réviser l’essentiel</small></div>
+<div class="tile" onclick="show('quiz')"><span class="emoji">🧠</span><b>Faire un QCM</b><small>Tester mes connaissances</small></div>
+<div class="tile" onclick="show('planning')"><span class="emoji">📅</span><b>Mon planning</b><small>Jusqu’au contrôle</small></div>
+</div>
+</main></section>
+
+<section id="add" class="screen"><main>
+<h1>Ajouter un cours</h1><p>L’IA le transforme ensuite en contenu de révision.</p>
+<div class="card"><h2>📷 Photographier</h2><p>Scanne ton cours manuscrit.</p><button class="btn primary full" onclick="fakeScan()">Prendre une photo</button></div>
+<div class="card"><h2>✍️ Écrire ou coller</h2><textarea rows="6" placeholder="Colle ou écris ton cours ici…"></textarea><button class="btn primary full" onclick="fakeGenerate()">Générer ma fiche</button></div>
+<div class="card"><h2>📄 Importer un PDF</h2><input type="file" accept=".pdf,image/*"><button class="btn light full" onclick="fakeGenerate()">Analyser le document</button></div>
+</main></section>
+
+<section id="fiche" class="screen"><main>
+<h1>Fiche de révision</h1><p>Maths · Second degré</p>
+<div class="card"><span class="badge">À retenir</span><h2 style="margin-top:14px">Forme canonique</h2><p>Pour f(x)=ax²+bx+c, on peut écrire la fonction sous forme canonique afin d’identifier son sommet et ses variations.</p></div>
+<div class="card"><h2>🧠 Identités remarquables</h2><p>(a+b)² = a² + 2ab + b²</p><p>(a−b)² = a² − 2ab + b²</p><p>a²−b² = (a−b)(a+b)</p></div>
+<button class="btn primary full" onclick="show('quiz')">Tester mes connaissances</button>
+</main></section>
+
+<section id="quiz" class="screen"><main>
+<h1>QCM</h1><p>Second degré · Question 1/5</p>
+<div class="card"><span class="badge">Gratuit</span><h2 style="margin-top:14px">Quel est le discriminant de ax²+bx+c ?</h2>
+<div class="choice" onclick="answer(this,false)">Δ = a² − 4bc</div>
+<div class="choice" onclick="answer(this,true)">Δ = b² − 4ac</div>
+<div class="choice" onclick="answer(this,false)">Δ = b² + 4ac</div>
+<div id="result" style="font-weight:700;margin-top:12px"></div></div>
+<div class="card lock"><span class="premium">🔒 Premium</span><h2>QCM personnalisé</h2><p>Généré à partir de ton cours et adapté à ton niveau.</p><button class="btn primary full" onclick="alert('Dans la V2 : abonnement Premium')">Débloquer</button></div>
+</main></section>
+
+<section id="planning" class="screen"><main>
+<h1>Mon planning</h1><p>Ton IA organise les révisions jusqu’au contrôle.</p>
+<div class="card"><label>Date du contrôle</label><input type="date" id="date"><button class="btn primary full" onclick="makePlan()">Créer mon planning</button></div>
+<div id="plan"></div>
+</main></section>
+
+<section id="profile" class="screen"><main>
+<h1>Mon profil</h1><div class="card"><h2>Élève</h2><p>Première générale · Maths</p></div><div class="card"><div class="row"><b>Progression globale</b><b>72 %</b></div><div class="progress" style="background:#eee"><i style="background:var(--accent);width:72%"></i></div></div></main></section>
+
+<nav>
+<button class="active" data-s="home" onclick="show('home')"><span class="ni">⌂</span>Accueil</button>
+<button data-s="add" onclick="show('add')"><span class="ni">＋</span>Cours</button>
+<button data-s="quiz" onclick="show('quiz')"><span class="ni">✓</span>QCM</button>
+<button data-s="planning" onclick="show('planning')"><span class="ni">◷</span>Planning</button>
+<button data-s="profile" onclick="show('profile')"><span class="ni">○</span>Profil</button>
+</nav>
+</div>
+<script>
+function show(id){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x.dataset.s===id));scrollTo(0,0)}
+function answer(el,ok){document.querySelectorAll('.choice').forEach(x=>x.style.pointerEvents='none');el.classList.add(ok?'correct':'wrong');document.getElementById('result').textContent=ok?'✅ Bonne réponse !':'❌ Pas tout à fait. La bonne réponse est Δ = b² − 4ac.'}
+function fakeScan(){alert('Prototype : ici, la caméra et l’analyse IA seront branchées dans la prochaine étape.')}
+function fakeGenerate(){show('fiche')}
+function makePlan(){let d=document.getElementById('date').value;if(!d){alert('Choisis une date.');return}document.getElementById('plan').innerHTML='<div class="card"><h2>📅 Planning personnalisé</h2><p>Jusqu’au contrôle, l’IA répartira les fiches, QCM et exercices selon le temps disponible.</p><p>• J−7 : comprendre le cours<br>• J−5 : fiche + exercices<br>• J−3 : QCM ciblé<br>• J−1 : contrôle blanc + erreurs<br>• Jour J : révision légère</p></div>'}
+function toggleTheme(){document.body.classList.toggle('dark');localStorage.setItem('theme',document.body.classList.contains('dark')?'dark':'light');document.getElementById('themeBtn').textContent=document.body.classList.contains('dark')?'☀️':'🌙'}
+if(localStorage.getItem('theme')==='dark'){document.body.classList.add('dark');document.getElementById('themeBtn').textContent='☀️'}
+</script>
+</body>
+</html>
