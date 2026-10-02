@@ -55,8 +55,8 @@ input,select,textarea{width:100%;padding:14px;border:1px solid var(--line);borde
 
 <section id="fiche" class="screen"><main>
 <h1>Fiche de révision</h1><p id="ficheSubtitle">Maths · Second degré</p>
-<div class="card"><span class="badge">Ton cours</span><h2 style="margin-top:14px">📚 Contenu enregistré</h2><div id="coursePreview" class="course-preview">Aucun cours personnel enregistré pour le moment.</div></div>
-<div class="card"><h2>🧠 Identités remarquables</h2><p>(a+b)² = a² + 2ab + b²</p><p>(a−b)² = a² − 2ab + b²</p><p>a²−b² = (a−b)(a+b)</p></div>
+<div class="card"><span class="badge">Ton cours</span><h2 style="margin-top:14px">📚 Contenu enregistré</h2><div id="coursePreview" class="course-preview">Aucun cours personnel enregistré pour le moment.</div></div
+<div id="aiCourseContent"></div>
 <button class="btn primary full" onclick="show('quiz')">Tester mes connaissances</button>
 </main></section>
 
@@ -219,6 +219,43 @@ const savedAIResult = localStorage.getItem('reviseai_ai_result');
 if (savedAIResult) {
   try {
     renderAIResult(JSON.parse(savedAIResult));
+  } catch (error) {
+    console.error(error);
+  }
+}
+function renderAICourse(data) {
+  const container = document.getElementById('aiCourseContent');
+  if (!container || !data) return;
+
+  let html = '<div class="card">';
+
+  if (data.title) {
+    html += '<h2>🧠 ' + escapeHTML(data.title) + '</h2>';
+  }
+
+  if (data.summary) {
+    html += '<p>' + escapeHTML(data.summary) + '</p>';
+  }
+
+  if (Array.isArray(data.key_points) && data.key_points.length) {
+    html += '<h3>🎯 À retenir</h3><ul>';
+
+    data.key_points.forEach(point => {
+      html += '<li>' + escapeHTML(point) + '</li>';
+    });
+
+    html += '</ul>';
+  }
+
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+const aiCourseSaved = localStorage.getItem('reviseai_ai_result');
+
+if (aiCourseSaved) {
+  try {
+    renderAICourse(JSON.parse(aiCourseSaved));
   } catch (error) {
     console.error(error);
   }
